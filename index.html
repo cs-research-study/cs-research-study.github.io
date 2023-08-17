@@ -358,18 +358,20 @@ ol li {
 						assign the post in the diagram with a score of $$\text{Score} = - 1 \times (39) + 0.5 \times (42) = -18. $$ This would 
 						then lead the feed algorithm to place it further down the feed than posts with higher (more positive) scores. </p>
 					</div>
-					<div class="col-6" style="border: 1px solid #ccc; padding: 10px;">
-						<img src="./templates/reference_post.png">
-						<p><i>This is a sample post with its features highlighted.</i></p>
-					</div>
 				</div>
-				</p>
+				<p>
 					Each scenario will offer several pairs of questions and self-assessments. For each 
 					question, you can receive <b>$0.15 for a correct answer</b>. After each question, you will 
 					be asked to self-assess the accuracy of your prediction. Correct self-assessment 
 					will be bonused up to $0.06 in the form of a self-bet (full confidence = full bet on 
 					oneself, no confidence = full bet against oneself; rewards are provided according to 
 					the odds of getting the question right).</p>
+				<div class="row mt-4">
+					<div class="col-6">
+						<label for="participant_name">Your Name:</label>
+						<input type="text" id="participant_name" name="participant_name" placeholder="Enter your name">
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -401,6 +403,21 @@ ol li {
   <div class="d-flex justify-content-end">
 	<button type="button" class="btn btn-primary" id="next-btn" onclick="next_screen()">Next</button>
   </div>
+  <script>
+    // Get the button element by its id
+    var nextButton = document.getElementById("next-btn");
+
+    // Function to simulate button click when Enter key is pressed
+    function activateNextButton(event) {
+        if (event.key === "Enter") {
+            nextButton.click();
+        }
+    }
+
+    // Add an event listener to the document to capture key presses
+    document.addEventListener("keydown", activateNextButton);
+</script>
+
 </div>
   
   </div>
@@ -1212,6 +1229,7 @@ function log_introduction() {
   {
     "screen_name": screenName,
     "time-elapsed": (new Date().getTime() - start_times[screenName]) / 1000,
+    "participant_name": participantName,
   };
 
   if (!output["global"]) {
@@ -1314,7 +1332,7 @@ var startTime;
 let post_array = parseTextFile();
 shuffle_array(post_array);
 
-let screen_order = generate_post_survey_array(post_array, 5);
+let screen_order = generate_post_survey_array(post_array, post_array.length);
 
 var post_index = 0;
 var screen_index = 0;
@@ -1325,6 +1343,18 @@ var start_times = {};
 output = {
     
 }
+
+// Get the input element by its id
+var inputElement = document.getElementById("participant_name");
+
+// Define a variable to store the participant's name
+var participantName = "";
+
+// Add an event listener to the input element
+inputElement.addEventListener("input", function() {
+    participantName = inputElement.value;
+});
+
 
 </script>
   <script type="text/javascript">
