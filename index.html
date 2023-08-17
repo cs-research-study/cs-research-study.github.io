@@ -1180,8 +1180,8 @@ function log_reddit_votes(screen_info, screen_name) {
     "study_type": screen_info.study_type,
     "instance_number": screen_info.instance_number,
     "SUBREDDIT": "r/" + screen_info.SUBREDDIT,
-    "USERNAME": undefined,
-    "CREATED_TIME": undefined,
+    "USERNAME": participantName,
+    "CREATED_TIME": null,
     "SUBMISSION_ID": screen_info.SUBMISSION_ID,
   };
 
@@ -1332,7 +1332,7 @@ var startTime;
 let post_array = parseTextFile();
 shuffle_array(post_array);
 
-let screen_order = generate_post_survey_array(post_array, post_array.length);
+let screen_order = generate_post_survey_array(post_array, 3);
 
 var post_index = 0;
 var screen_index = 0;
