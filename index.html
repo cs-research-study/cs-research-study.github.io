@@ -1332,7 +1332,7 @@ var startTime;
 let post_array = parseTextFile();
 shuffle_array(post_array);
 
-let screen_order = generate_post_survey_array(post_array, 3);
+let screen_order = generate_post_survey_array(post_array, post_array.length);
 
 var post_index = 0;
 var screen_index = 0;
