@@ -2091,7 +2091,6 @@ function get_questions(screen_type, confidence = true) {
   if (questionId.slice(-2) === "CF") {
     screenOutput["chosen_confidence"] = checkedOptions[0];
     screenOutput["confidence"] = sumOfValues;
-    console.log(sumOfValues);
   } else {
     const questionNum = questionId.slice(-2);
     screenOutput["chosen_options_" + questionNum] = checkedOptions;
