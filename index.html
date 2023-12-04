@@ -2052,7 +2052,7 @@ function get_questions(screen_type, confidence = true) {
     const optionText = checkedInput.nextElementSibling.textContent;
     checkedOptions.push(optionText);
     const optionValue = parseFloat(checkedInput.value, 10);
-    sumOfValues += isNaN(optionValue) ? 0 : optionValue < 0 ? 0 : optionValue;
+    sumOfValues += isNaN(optionValue) ? 0 : optionValue;
   }
 
   if (questionId.slice(-2) !== "CF") {
@@ -2091,6 +2091,7 @@ function get_questions(screen_type, confidence = true) {
   if (questionId.slice(-2) === "CF") {
     screenOutput["chosen_confidence"] = checkedOptions[0];
     screenOutput["confidence"] = sumOfValues;
+    console.log(sumOfValues);
   } else {
     const questionNum = questionId.slice(-2);
     screenOutput["chosen_options_" + questionNum] = checkedOptions;
@@ -2441,7 +2442,7 @@ function redactItems(classNames) {
         items[i].classList.add('redacted');
       }
     } else {
-      console.log(`No items with class name ${className} found`);
+      // console.log(`No items with class name ${className} found`);
     }
 
   });
@@ -2526,7 +2527,6 @@ const output = {}
 
 function init() {
   if (redacted.length > 0) {
-    console.log(json_questions["exposure"][0]["text"]);
     json_questions["exposure"][0]["text"] += " Text has been redacted because it is not relevant to the tasks.";
   }
 
