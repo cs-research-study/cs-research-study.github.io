@@ -275,10 +275,10 @@ ul li, ol li {
                             You will not be recorded via audio or video.
 						</p>
 						<p style="font-size: 18px;">
-                            TIME INVOLVEMENT: Your participation will take approximately 30 minutes.
+                            TIME INVOLVEMENT: Your participation will take approximately 15 minutes.
 						 </p>
                          <p style="font-size: 18px;">
-                            PAYMENTS: You will receive $7.50 via the survey platform upon completion of the study, and you will receive additional compensation of $0.10 per correct answer afterwards, as payment for your participation. A total of up to $1.50 in bonuses is available.
+                            PAYMENTS: You will receive $3.75 via the survey platform upon completion of the study, and you will receive additional compensation of $0.10 per correct answer (above 50%), as payment for your participation. A total of up to $1.50 in bonuses is available.
 						 </p>
                          <p style="font-size: 18px;">
                             RISKS AND BENEFITS: The risks associated with this study are minimal. 
@@ -392,7 +392,7 @@ ul li, ol li {
                         <p style="font-size: 18px;">
                             You have failed too many of the attention checks to proceed. 
                             
-                            Please return this study by closing the survey and clicking 'Stop Without Completing' on Prolific.
+                            Please return this study by closing the survey and clicking 'Stop Without Completing'.
 						</p>
                     </div>
                 </div>
@@ -554,11 +554,12 @@ ul li, ol li {
   <script type="text/javascript" src="templates/feed_data/concept_feeds.js"></script> -->
   <!-- <script type="text/javascript" src="templates/feed_data/extra_dummy_posts.js"></script> -->
   <script type="text/javascript" src="templates/feed_data/dummy_alg_posts_2.js"></script>
+  <script type="text/javascript" src="templates/feed_data/safe_indices.js"></script>
   <script type="text/javascript" src="templates/feed_data/algorithm_info.js"></script>
 
   <script type="text/javascript">
     const question_screens = [
-  /*"feed_comparison" , "post_arrangement" /*"counterfactual_placement",*/ "post_placement", "post_placement_check_1", "post_placement_check_2", "exposure_intro_1", "exposure_intro_2", "exposure_intro_3", "exposure_intro_4"
+  /*"feed_comparison" , "post_arrangement" /*"counterfactual_placement",*/ "post_placement", "post_placement_check_1", "post_placement_check_2", "post_placement_check_3", "post_placement_check_4", "post_placement_check_5", "exposure_intro_1", "exposure_intro_2", "exposure_intro_3", "exposure_intro_4"
 ];
 
 const question_screen_types = ["post_placement"]
@@ -570,12 +571,16 @@ const num_features =
 
 const num_same_features_and_question = 30;
 
+const set_posts = false;
+var study_indices = null;
+
 // const possible_conditions = ["A"];
 
-// const possible_conditions = ["likes_ratio"]
-// const possible_conditions = ["chronological"];
-const possible_conditions = ["gpt_quality", "severe_toxicity", "factual", "chronological", "likes", "likes_ratio", 
-  "random", "Caring", "first_person_pronouns", "hashes", "conservative_values", "parts_of_speech"];
+const possible_conditions = ["first_person_pronouns"];
+// const possible_conditions = ["severe_toxicity_noise_0.5", "severe_toxicity_noise_0.8", "first_person_pronouns"]
+// const possible_conditions = ["ratio_easy", "ratio_medium", "ratio_hard", "ratio_hardest"];
+// const possible_conditions = ["gpt_quality", "severe_toxicity", "factual", "chronological", "likes", "likes_ratio", 
+//   "random", "Caring", "first_person_pronouns", "hashes", "conservative_values", "parts_of_speech"];
 
 // const possible_conditions = ["chronological", "likes", 
 // "engagement_soup", "first_person_pronouns", 
@@ -590,10 +595,36 @@ const possible_conditions = ["gpt_quality", "severe_toxicity", "factual", "chron
 // "hashes", "conservative_values"]
 
 
-
-const condition = possible_conditions[
+// var safe_indices = [];
+// var condition = "likes_ratio";
+const condition_chosen = possible_conditions[
   Math.floor(Math.random() * possible_conditions.length)
 ];
+var condition = condition_chosen;
+
+console.log(condition);
+// if (condition_chosen == "likes_ratio_stricter") {
+//   safe_indices = safe_indices_LR;
+//   condition = "likes_ratio"
+// } else if(condition_chosen == "likes_ratio_fix"){
+//   safe_indices = safe_indices_fix;
+// }else if (condition_chosen == "likes_ratio") {
+//   safe_indices = rand_indices_LR;
+//   condition = "likes_ratio";
+// } else if (condition_chosen == "odder_engagement") {
+//   safe_indices = rand_indices_OE;
+//   condition = "odder_engagement";
+// }
+
+if (set_posts) {
+  study_indices = safe_indices[
+    Math.floor(Math.random() * safe_indices.length)
+  ];
+}
+// study_indices = [619,560,334,282,120,208,263,429,469,661,494,369,407,371,59,464,210,79,49,660,322,677,227,18,672,639,202,548,160,238,301,587,613,306,207,121,412,387,601,546,482,164,152,673,451,168,376,292,2,588,5364,5424,5480,4922,5449,5230,5404,5288,5141,5111,5034,5515,5119,5510,4965,4975,5440,4996,5273,4866,5031,5113,5164,5189,5242,5104,5122,5017,5022,5016,4944,5419,5195,5024,5028,5399,5376,4865,5106,4911,5418,5015,5467,5401,5186,5264,5221,5248,5370,5029];
+
+
+
 // const concept_index = Math.floor(
 //   Math.random() * concept_feeds.length
 // );
@@ -608,10 +639,14 @@ const num_buckets = 8;
 const bucketing = true;
 const algorithms_already_created = true;
 
+
 let source_posts;
-if (bucketing) {
+if (bucketing && !set_posts) {
   alg_posts.sort((a,b) => a[condition] - b[condition]);
   source_posts = generate_posts_from_buckets(alg_posts, num_buckets, alg_posts.length, extreme=true);//alg_posts, generic_posts;
+} else if (set_posts) {
+  alg_posts.sort((a,b) => a[condition] - b[condition]);
+  source_posts = generate_posts_from_buckets(alg_posts, num_buckets, alg_posts.length, extreme=false);//alg_posts, generic_posts;
 }
 else {
   source_posts = generic_posts;
@@ -917,12 +952,52 @@ Consider the following two posts. Order them according to how you think the earl
 //     ],
 //   },
 
-  post_placement_check_1: {
+// post_placement_check_1: {
+//   template_id: "feed-and-sidebar",
+//   sidebar_entries: [
+//     {
+//       markdown: `
+// We will start off with a practice of the selection task. Consider the following two posts. Arrange the posts so that the one that starts with "My" is on top.
+//       `,
+//       answer_area: "post_bank",
+//       includes_confidence: include_confidence,
+//     },
+//   ],
+// },
+
+//   post_placement_check_2: {
+//     template_id: "feed-and-sidebar",
+//     sidebar_entries: [
+//       {
+//         markdown: `
+// Consider the following two posts. Arrange the posts so the one with more words is on top.
+//         `,
+//         answer_area: "post_bank",
+//         includes_confidence: include_confidence,
+//       },
+//     ],
+//   },
+
+
+post_placement_check_1: {
+  template_id: "feed-and-sidebar",
+  sidebar_entries: [
+    {
+      markdown: `
+We will start off with a practice of the selection task. Consider the following two posts. Arrange the posts so that the one on top is the one with a larger number.
+      `,
+      answer_area: "post_bank",
+      includes_confidence: include_confidence,
+    },
+  ],
+},
+
+  post_placement_check_2: {
     template_id: "feed-and-sidebar",
     sidebar_entries: [
       {
         markdown: `
-We will start off with a practice of the selection task. Consider the following two posts. Arrange the posts so the one you think is more likely to be true is on top.
+Consider the following two posts. Arrange the posts so the one you think is more likely to be true is on top.
         `,
         answer_area: "post_bank",
         includes_confidence: include_confidence,
@@ -930,18 +1005,48 @@ We will start off with a practice of the selection task. Consider the following 
     ],
   },
 
-  post_placement_check_2: {
+
+
+
+  post_placement_check_3: {
     template_id: "feed-and-sidebar",
     sidebar_entries: [
       {
         markdown: `
-Consider the following two posts. Arrange the posts so that the one on top is the one with a larger number.
+Consider the following two posts. Arrange the posts so the one with more adjectives is on top.
         `,
         answer_area: "post_bank",
         includes_confidence: include_confidence,
       },
     ],
   },
+
+  post_placement_check_4: {
+    template_id: "feed-and-sidebar",
+    sidebar_entries: [
+      {
+        markdown: `
+We will start off with a practice of the selection task. Consider the following two posts. Arrange the posts so the one where the word "she" appears more is on top.
+        `,
+        answer_area: "post_bank",
+        includes_confidence: include_confidence,
+      },
+    ],
+  },
+
+  post_placement_check_5: {
+    template_id: "feed-and-sidebar",
+    sidebar_entries: [
+      {
+        markdown: `
+We will start off with a practice of the selection task. Consider the following two posts. Arrange the posts so the one with more second person pronouns (you, your, yours) is on top.
+        `,
+        answer_area: "post_bank",
+        includes_confidence: include_confidence,
+      },
+    ],
+  },
+
 
   counterfactual_placement: {
     template_id: "feed-and-sidebar",
@@ -1249,7 +1354,7 @@ function insert_post(post, feed_parent_list, locked, divide=false) {
   } rounded`;
   let rgb = string_to_rgb(post.author_name);
 
-  if (post.attn_1 || post.attn_2) {
+  if (post.attn_1 || post.attn_2|| post.attn_3||post.attn_4 ||post.attn_5) {
     post.text = "";
     post.author_name = "";
     rgb = [0,0,0];
@@ -1257,7 +1362,7 @@ function insert_post(post, feed_parent_list, locked, divide=false) {
       post[key] = null;
     }
   } 
-  if (post.attn_2) {
+  if (post.attn_1) {
     // var color = post["correct_position"] * 150 + 50
     // post_list_item.style =  `background-color: rgb(${color}, ${color}, ${color})`;
     var incorrect = post["correct_position"];
@@ -1268,12 +1373,59 @@ function insert_post(post, feed_parent_list, locked, divide=false) {
     }
   }
  
-  if (post.attn_1) {
+  if (post.attn_2) {
     var incorrect = post["correct_position"];
     if (!incorrect) {
       post.text = "The sky is blue because it is sunny today."
     } else {
       post.text = "The sky is red because it is sunny today."
+    }
+  }
+
+  // if (post.attn_1) {
+  //   // var color = post["correct_position"] * 150 + 50
+  //   // post_list_item.style =  `background-color: rgb(${color}, ${color}, ${color})`;
+  //   var incorrect = post["correct_position"];
+  //   if (!incorrect) {
+  //     post.text = "My favorite politician is RFK Jr. "
+  //   } else {
+  //     post.text = "I'm watching the RNC right now"
+  //   }
+  // }
+ 
+  // if (post.attn_2) {
+  //   var incorrect = post["correct_position"];
+  //   if (!incorrect) {
+  //     post.text = "I think the USA needs a female president. We've had 45 guys so I think it's high time for a woman. Let's go Kamala! I'm voting for her."
+  //   } else {
+  //     post.text = "This country is falling apart and the two party system is to blame."
+  //   }
+  // }
+
+  if (post.attn_3) {
+    var incorrect = post["correct_position"];
+    if (!incorrect) {
+      post.text = "My friend just bought me a gorgeous new dress. It's so summery and flouncy, perfect for wearing in hot weather!"
+    } else {
+      post.text = "I want to go home already. My day was long and I need sleep, so it would be nice if I didn't have 10 more emails to send. Ugh... can anyone relate?"
+    }
+  }
+
+  if (post.attn_4) {
+    var incorrect = post["correct_position"];
+    if (!incorrect) {
+      post.text = "Happy mothers day! I really appreciate my mother for all she did for me. I owe her a lot and hope she knows it"
+    } else {
+      post.text = "I called my sister today and she hung up on me immediately. Politics are ruining our relationships."
+    }
+  }
+
+  if (post.attn_5) {
+    var incorrect = post["correct_position"];
+    if (!incorrect) {
+      post.text = "When deciding how to vote, you should start by reading each candidate's platform. You should discuss your opinions with others in your community to understand what issues affect them. Also, you shouldn't forget to make sure you are registered."
+    } else {
+      post.text = "Your opinions suck! Mine, on the other hand, are always very intelligent and reasonable. Be more like me :)"
     }
   }
   
@@ -1354,6 +1506,7 @@ function insert_feed(
   let indicies;
   if (bucketing) {
     indicies = get_random_sample_indices_from_chunks(feed_data, starting_num_posts);
+    // TODO: this is where we should take two
 
   }
 
@@ -1494,7 +1647,7 @@ function populate_feed_container(
           ).sort(() => .5 - Math.random()).slice(0, num_posts_to_load);
           for (let j = 0; j < all_posts.length; j++) {
             //TODO: this may have an issue in the case that the very last index is called
-            if (typeof feeds[i][j] !== 'undefined' && indicies.indexOf(feeds[i][j]["Index"]) != -1) {
+            if (typeof feeds[i][j] !== 'undefined' && (indicies.indexOf(feeds[i][j]["Index"]) != -1 || set_posts)) {
               all_posts[j].style.display = "block";
             }
           }
@@ -2687,9 +2840,10 @@ function next_screen() {
     log_section(curr_section_index);
   }
 
-  if (curr_screen_info.screen_type == "post_placement_check_2") {
-    const sum = output["training"][0]["score_Q1"] + output["training"][1]["score_Q1"];
+  if (curr_screen_info.screen_type == "post_placement_check_2" || curr_screen_info.screen_type == "post_placement_check_5") {
+    const sum = output["training"][0]["score_Q1"] + output["training"][1]["score_Q1"]; //+ output["training"][2]["score_Q1"] + output["training"][3]["score_Q1"] + output["training"][4]["score_Q1"];
     if (sum == 0) {
+      
       // do nothing
     } else {
       increment_screen_index();
@@ -2794,13 +2948,13 @@ function submit() {
       Accept: "*/*",
     },
     body: JSON.stringify({
-      experimentID: "XiZdOjs5eV5X",
+      experimentID: "sRGRkMTwjX0r",
       filename: filename,
       data: string_output,
     }),
   }).then(response => {
-    // window.location.href = 'https://app.prolific.com/submissions/complete?cc=CG717WJX';
-    window.location.href= "https://connect.cloudresearch.com/participant/project/F5FE3D364D/complete";
+    window.location.href = 'https://app.prolific.com/submissions/complete?cc=CG717WJX';
+    // window.location.href= "https://connect.cloudresearch.com/participant/project/F5FE3D364D/complete";
   })
   // window.location.href = 'https://app.prolific.com/submissions/complete?cc=CG717WJX';
   // proliferate.submit(output);
@@ -2940,6 +3094,45 @@ function generate_scored_screen_object(
         includes_confidence
       );
       break;
+      case "post_placement_check_3":
+      screen = generate_post_placement_screen(
+        screen_type,
+        base_posts,
+        starting_num_posts,
+        num_posts_to_load,
+        weights,
+        feature_count,
+        repeat_num,
+        is_practice,
+        includes_confidence
+      );
+      break;
+      case "post_placement_check_4":
+      screen = generate_post_placement_screen(
+        screen_type,
+        base_posts,
+        starting_num_posts,
+        num_posts_to_load,
+        weights,
+        feature_count,
+        repeat_num,
+        is_practice,
+        includes_confidence
+      );
+      break;
+      case "post_placement_check_5":
+      screen = generate_post_placement_screen(
+        screen_type,
+        base_posts,
+        starting_num_posts,
+        num_posts_to_load,
+        weights,
+        feature_count,
+        repeat_num,
+        is_practice,
+        includes_confidence
+      );
+      break;
     case "counterfactual_placement":
       screen = generate_counterfactual_placement_screen(
         screen_type,
@@ -3029,14 +3222,17 @@ function generate_screen_array(
   let base_posts;
   let q_posts;
   let random_posts;
-  if (bucketing) {
+  if (bucketing && !set_posts) {
     let base_posts_indices = get_random_sample_indices_from_chunks(posts, Math.floor(posts.length/2), extreme=false);
     base_posts = base_posts_indices.map(idx => posts[idx]);
     q_posts = posts.filter((post, index) => !base_posts_indices.includes(index));
     // random_posts = get_random_sample(posts, 100);
     // base_posts = base_posts.filter((post) => post["Chunk"] !== 0);
   }
-  else {
+  else if (set_posts){
+    base_posts = study_indices.slice(0,10).concat(study_indices.slice(50,60)).map(idx => posts[idx]);
+    q_posts = study_indices.slice(10,50).concat(study_indices.slice(60,100)).map(idx => posts[idx]);
+  } else {
     base_posts = get_random_sample(posts, max_num_posts_possible);
   }
 
@@ -3056,14 +3252,26 @@ function generate_screen_array(
     // I don't think we need to do anything, just don't unsort 
   }
 
-  var check_posts = get_random_sample_from_chunks(q_posts, 4);
+  var check_posts = get_random_sample_from_chunks(q_posts, 10);
   var check_posts_1 = check_posts.slice(0,2);
-  var check_posts_2 = check_posts.slice(2);
+  var check_posts_2 = check_posts.slice(2,4);
+  var check_posts_3 = check_posts.slice(4,6);
+  var check_posts_4 = check_posts.slice(6,8);
+  var check_posts_5 = check_posts.slice(8);
   check_posts_1.forEach((post) => {
     post.attn_1 = true;
   });
   check_posts_2.forEach((post) => {
     post.attn_2 = true;
+  });
+  check_posts_3.forEach((post) => {
+    post.attn_3 = true;
+  });
+  check_posts_4.forEach((post) => {
+    post.attn_4 = true;
+  });
+  check_posts_5.forEach((post) => {
+    post.attn_5 = true;
   });
   
 
@@ -3089,6 +3297,39 @@ function generate_screen_array(
     true,
     includes_confidence=false
   );
+  const check3 = generate_scored_screen_object(
+    "post_placement_check_3",
+    check_posts_3,
+    starting_num_posts,
+    0,
+    weights,
+    feature_counts[0],
+    1,
+    true,
+    includes_confidence=false
+  );
+  const check4 = generate_scored_screen_object(
+    "post_placement_check_4",
+    check_posts_4,
+    starting_num_posts,
+    0,
+    weights,
+    feature_counts[0],
+    1,
+    true,
+    includes_confidence=false
+  );
+  const check5 = generate_scored_screen_object(
+    "post_placement_check_5",
+    check_posts_5,
+    starting_num_posts,
+    0,
+    weights,
+    feature_counts[0],
+    1,
+    true,
+    includes_confidence=false
+  );
 
   const return_screen = {
     screen_type: "return_screen",
@@ -3102,7 +3343,8 @@ function generate_screen_array(
   
   section_array.push({
     section_name: "training",
-    screens: [check1, check2, return_screen, exposure_intro_1, exposure_intro_2, exposure_intro_3, exposure_intro_4],
+    screens: [check3, check4, check5, return_screen, exposure_intro_1, exposure_intro_2, exposure_intro_3, exposure_intro_4],
+    //screens: [check1, check2, return_screen, exposure_intro_1, exposure_intro_2, exposure_intro_3, exposure_intro_4],
   });
 
   // const post_exposure_screen = generate_post_exposure_screen("post_exposure",
@@ -3150,8 +3392,15 @@ function generate_screen_array(
       repeat_num++
     ) {
       let base_posts;
-      if (bucketing) {
+      if (bucketing&& !set_posts) {
         base_posts = get_random_sample_from_chunks(q_posts, num_posts+1, extreme=false, required_diff=1);
+      } else if (set_posts) {
+          var chance = Math.random()
+          if (chance > 0.5) {
+            base_posts = q_posts.slice(0+repeat_num-1,0+repeat_num).concat(q_posts.slice(40+repeat_num-1,40+repeat_num));
+          } else {
+            base_posts = q_posts.slice(40+repeat_num-1,40+repeat_num).concat(q_posts.slice(0+repeat_num-1,0+repeat_num));
+          }
       }
       else {
         base_posts = get_random_sample(posts, num_posts+1);
@@ -3209,14 +3458,20 @@ function generate_screen_array(
     ) {
       let base_posts;
       let temp_screen_type = screen_type;
-      if (bucketing) {
+      if (bucketing&& !set_posts) {
         base_posts = get_random_sample_from_chunks(q_posts, num_posts+1, extreme=false, required_diff=1);
+      } else if (set_posts) {
+          var chance = Math.random()
+          if (chance > 0.5) {
+            base_posts = q_posts.slice(10+repeat_num-1,10+repeat_num).concat(q_posts.slice(50+repeat_num-1,50+repeat_num));
+          } else {
+            base_posts = q_posts.slice(50+repeat_num-1,50+repeat_num).concat(q_posts.slice(10+repeat_num-1,10+repeat_num));
+          }
       }
       else {
         base_posts = get_random_sample(posts, num_posts+1);
         // base_posts = deep_copy(posts)
       }
-
 
       if (repeat_num == attn_1) {
         temp_screen_type = "post_placement_check_1";
@@ -3265,14 +3520,14 @@ function generate_screen_array(
 
 
   const feedback_screen = generate_feedback_screen("feedback");
-  const feedback_screen2 = generate_feedback_screen("feedback_2");
-  const feedback_screen3 = generate_feedback_screen("feedback_3");
-  const feedback_screen4 = generate_feedback_screen("feedback_4");
-  const feedback_screen5 = generate_feedback_screen("feedback_5");
+  // const feedback_screen2 = generate_feedback_screen("feedback_2");
+  // const feedback_screen3 = generate_feedback_screen("feedback_3");
+  // const feedback_screen4 = generate_feedback_screen("feedback_4");
+  // const feedback_screen5 = generate_feedback_screen("feedback_5");
 
   section_array.push({
     section_name: "feedback",
-    screens: [feedback_screen, feedback_screen2, feedback_screen3, feedback_screen4, feedback_screen5],
+    screens: [feedback_screen] //[feedback_screen, feedback_screen2, feedback_screen3, feedback_screen4, feedback_screen5],
   });
 
   const submission_screen = {
@@ -3591,31 +3846,41 @@ function generate_posts_from_buckets(data, num_buckets, max_num_posts_possible, 
 
   var buckets_with_extra = assign_extra_posts_to_buckets(posts_left_over, num_buckets)
 
+
   var chunks = []
   var sampled_chunks = []
 
-  let count = 0
-  for (let i = 0; i < data.length; i += length_of_buckets) {
-    if (count == num_buckets - 1) {
-      var chunk = data.slice(i);
-    }
-    else {
-      var chunk = data.slice(i, i + length_of_buckets);
-    }
-    chunks.push(chunk)
-
-    if (buckets_with_extra.includes(count)) {
-      let num_to_add = buckets_with_extra.reduce((n, x) => n + (x === count), 0);
-      sampled_chunks.push(get_random_sample(chunk, posts_per_bucket + num_to_add))
-    }
-    else {
-      sampled_chunks.push(get_random_sample(chunk, posts_per_bucket))
-    }
-    if (count == num_buckets - 1) {
-      break;
-    }
-    count += 1;
+  let index = 0
+  for (let b=0; b < num_buckets; b+=1) {
+    var extra = (b in buckets_with_extra) ? 1 : 0;
+    var chunk = data.slice(index, index + posts_per_bucket + extra);
+    sampled_chunks.push(chunk);
+    index+= chunk.length;
   }
+  // for (let i = 0; i < data.length; i += length_of_buckets) {
+  //   if (count == num_buckets - 1) {
+  //     var chunk = data.slice(i);
+  //   }
+  //   else {
+  //     var extra = ()
+  //     var chunk = data.slice(i, i + length_of_buckets);
+  //   }
+  //   sampled_chunks.push(chunk)
+
+  //   if (buckets_with_extra.includes(count)) {
+  //     let num_to_add = buckets_with_extra.reduce((n, x) => n + (x === count), 0);
+  //     console.log(num_to_add);
+  //     sampled_chunks.push(get_random_sample(chunk, posts_per_bucket + num_to_add))
+  //   }
+  //   else {
+  //     sampled_chunks.push(get_random_sample(chunk, posts_per_bucket))
+  //   }
+  //   if (count == num_buckets - 1) {
+  //     break;
+  //   }
+  //   count += 1;
+  // }
+
 
   var post_count = 0;
   var sampled_chunks_flattened = []
@@ -4072,7 +4337,7 @@ function generate_post_placement_screen(
     SCREEN_TYPE_INFO[screen_type].sidebar_entries
   );
   sidebar_entries[0]["includes_confidence"] = includes_confidence;
-  new_post["correct_index"] = new_post_index
+  new_post["correct_index"] = new_post_index;
   new_post["correct_position"] = new_post_index;
   without_new_post[0]["correct_position"] = ref_post_index;
 
@@ -4373,6 +4638,8 @@ const SESSION_ID = params.get("SESSION_ID");
 output["global"].push({pid: PID});
 output["global"].push({study_id: STUDY_ID});
 output["global"].push({session_id: SESSION_ID});
+output["global"].push({posts: study_indices});
+output["global"].push({study_condition: condition_chosen});
 
 // output["global"].push({ linear_combination_sort: study_weights });
 
