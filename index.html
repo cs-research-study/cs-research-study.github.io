@@ -1375,6 +1375,10 @@ function insert_post(post, feed_parent_list, locked, divide=false) {
       post[key] = null;
     }
   } 
+  // TODO: change back
+  for (const key in feature_dict) {
+    post[key] = null;
+  }
   if (post.attn_1) {
     // var color = post["correct_position"] * 150 + 50
     // post_list_item.style =  `background-color: rgb(${color}, ${color}, ${color})`;
@@ -2863,7 +2867,7 @@ function next_screen() {
   }
 
   if (curr_screen_info.screen_type == "post_placement_check_2" || curr_screen_info.screen_type == "post_placement_check_6") {
-    const sum = output["training"][0]["score_Q1"] + output["training"][1]["score_Q1"]; //+ output["training"][2]["score_Q1"] + output["training"][3]["score_Q1"] + output["training"][4]["score_Q1"];
+    const sum = output["training"][0]["score_Q1"] + output["training"][1]["score_Q1"] + output["training"][2]["score_Q1"] + output["training"][3]["score_Q1"] //+ output["training"][4]["score_Q1"];
     if (sum == 0) {
       
       // do nothing
@@ -2970,7 +2974,7 @@ function submit() {
       Accept: "*/*",
     },
     body: JSON.stringify({
-      experimentID: "Bcdk0rkYa3sN",
+      experimentID: "N6LbAWB4tX1S",
       filename: filename,
       data: string_output,
     }),
