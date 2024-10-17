@@ -559,7 +559,7 @@ ul li, ol li {
 
   <script type="text/javascript">
     const question_screens = [
-  /*"feed_comparison" , "post_arrangement" /*"counterfactual_placement",*/ "post_placement", "post_placement_check_1", "post_placement_check_2", "post_placement_check_3", "post_placement_check_4", "post_placement_check_5", "exposure_intro_1", "exposure_intro_2", "exposure_intro_3", "exposure_intro_4"
+  /*"feed_comparison" , "post_arrangement" /*"counterfactual_placement",*/ "post_placement", "post_placement_check_1", "post_placement_check_2", "post_placement_check_3", "post_placement_check_4", "post_placement_check_5", "post_placement_check_6", "exposure_intro_1", "exposure_intro_2", "exposure_intro_3", "exposure_intro_4"
 ];
 
 const question_screen_types = ["post_placement"]
@@ -1026,7 +1026,7 @@ Consider the following two posts. Arrange the posts so the one with more adjecti
     sidebar_entries: [
       {
         markdown: `
-We will start off with a practice of the selection task. Consider the following two posts. Arrange the posts so the one where the word "she" appears more is on top.
+Consider the following two posts. Arrange the posts so the one where the word "she" appears more is on top.
         `,
         answer_area: "post_bank",
         includes_confidence: include_confidence,
@@ -1039,7 +1039,20 @@ We will start off with a practice of the selection task. Consider the following 
     sidebar_entries: [
       {
         markdown: `
-We will start off with a practice of the selection task. Consider the following two posts. Arrange the posts so the one with more second person pronouns (you, your, yours) is on top.
+Consider the following two posts. Arrange the posts so the one with more second person pronouns (you, your, yours) is on top.
+        `,
+        answer_area: "post_bank",
+        includes_confidence: include_confidence,
+      },
+    ],
+  },
+
+  post_placement_check_6: {
+    template_id: "feed-and-sidebar",
+    sidebar_entries: [
+      {
+        markdown: `
+Consider the following two posts. Arrange the posts so the one with more third person pronouns (she, his, their, them, etc) is on top.
         `,
         answer_area: "post_bank",
         includes_confidence: include_confidence,
@@ -1426,6 +1439,15 @@ function insert_post(post, feed_parent_list, locked, divide=false) {
       post.text = "When deciding how to vote, you should start by reading each candidate's platform. You should discuss your opinions with others in your community to understand what issues affect them. Also, you shouldn't forget to make sure you are registered."
     } else {
       post.text = "Your opinions suck! Mine, on the other hand, are always very intelligent and reasonable. Be more like me :)"
+    }
+  }
+
+  if (post.attn_6) {
+    var incorrect = post["correct_position"];
+    if (!incorrect) {
+      post.text = "When I think about polititians today, all I can think about is how corrupt they are. She's embezzling, he's trying to get cozy with the lobbyists, they're all in bed with the corporations!"
+    } else {
+      post.text = "Rent control legislation needs to happen, now! Homelessness is a growing problem in our cities."
     }
   }
   
@@ -2840,7 +2862,7 @@ function next_screen() {
     log_section(curr_section_index);
   }
 
-  if (curr_screen_info.screen_type == "post_placement_check_2" || curr_screen_info.screen_type == "post_placement_check_5") {
+  if (curr_screen_info.screen_type == "post_placement_check_2" || curr_screen_info.screen_type == "post_placement_check_6") {
     const sum = output["training"][0]["score_Q1"] + output["training"][1]["score_Q1"]; //+ output["training"][2]["score_Q1"] + output["training"][3]["score_Q1"] + output["training"][4]["score_Q1"];
     if (sum == 0) {
       
@@ -2948,7 +2970,7 @@ function submit() {
       Accept: "*/*",
     },
     body: JSON.stringify({
-      experimentID: "sRGRkMTwjX0r",
+      experimentID: "Bcdk0rkYa3sN",
       filename: filename,
       data: string_output,
     }),
@@ -3133,6 +3155,19 @@ function generate_scored_screen_object(
         includes_confidence
       );
       break;
+      case "post_placement_check_6":
+      screen = generate_post_placement_screen(
+        screen_type,
+        base_posts,
+        starting_num_posts,
+        num_posts_to_load,
+        weights,
+        feature_count,
+        repeat_num,
+        is_practice,
+        includes_confidence
+      );
+      break;
     case "counterfactual_placement":
       screen = generate_counterfactual_placement_screen(
         screen_type,
@@ -3252,12 +3287,13 @@ function generate_screen_array(
     // I don't think we need to do anything, just don't unsort 
   }
 
-  var check_posts = get_random_sample_from_chunks(q_posts, 10);
+  var check_posts = get_random_sample_from_chunks(q_posts, 12);
   var check_posts_1 = check_posts.slice(0,2);
   var check_posts_2 = check_posts.slice(2,4);
   var check_posts_3 = check_posts.slice(4,6);
   var check_posts_4 = check_posts.slice(6,8);
-  var check_posts_5 = check_posts.slice(8);
+  var check_posts_5 = check_posts.slice(8, 10);
+  var check_posts_6 = check_posts.slice(10);
   check_posts_1.forEach((post) => {
     post.attn_1 = true;
   });
@@ -3272,6 +3308,9 @@ function generate_screen_array(
   });
   check_posts_5.forEach((post) => {
     post.attn_5 = true;
+  });
+  check_posts_6.forEach((post) => {
+    post.attn_6 = true;
   });
   
 
@@ -3331,6 +3370,18 @@ function generate_screen_array(
     includes_confidence=false
   );
 
+  const check6 = generate_scored_screen_object(
+    "post_placement_check_6",
+    check_posts_6,
+    starting_num_posts,
+    0,
+    weights,
+    feature_counts[0],
+    1,
+    true,
+    includes_confidence=false
+  );
+
   const return_screen = {
     screen_type: "return_screen",
     template_id: "return_screen",
@@ -3343,7 +3394,7 @@ function generate_screen_array(
   
   section_array.push({
     section_name: "training",
-    screens: [check3, check4, check5, return_screen, exposure_intro_1, exposure_intro_2, exposure_intro_3, exposure_intro_4],
+    screens: [check3, check4, check5, check6, return_screen, exposure_intro_2, exposure_intro_3, exposure_intro_4],
     //screens: [check1, check2, return_screen, exposure_intro_1, exposure_intro_2, exposure_intro_3, exposure_intro_4],
   });
 
