@@ -885,7 +885,7 @@ Does the feed contain only political posts, or can they be about any topic?
         markdown: `
 This is Your Politics Feed: a feed of political social media posts. They are sorted by an algorithm, but not by the algorithm that is usually used on social media. 
 
-Try to figure out what the algorithm is doing by looking at the text AND the displayed features like engagement and time posted, all of which COULD be involved.
+Try to figure out what the algorithm is doing by looking at the text shown.
 
 All following questions in the study will ask you to rank posts based on this algorithm.
 <button id = "load-more-button"></button>
@@ -899,6 +899,28 @@ it is not relevant to the tasks.*`
       },
     ],
   },
+
+//   exposure: {
+//     template_id: "feed-and-sidebar",
+//     sidebar_entries: [
+//       {
+//         markdown: `
+// This is Your Politics Feed: a feed of political social media posts. They are sorted by an algorithm, but not by the algorithm that is usually used on social media. 
+
+// Try to figure out what the algorithm is doing by looking at the text AND the displayed features like engagement and time posted, all of which COULD be involved.
+
+// All following questions in the study will ask you to rank posts based on this algorithm.
+// <button id = "load-more-button"></button>
+// ${
+//           any_redacted
+//             ? `*Some text has been redacted because 
+// it is not relevant to the tasks.*`
+//             : ""
+//         }
+//         `,
+//       },
+//     ],
+//   },
 
   correct_response: {
     template_id: "feed-and-sidebar",
