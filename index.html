@@ -572,7 +572,7 @@ const num_features =
 const num_same_features_and_question = 30;
 
 const set_posts = false;
-var study_indices = new Set();;
+var study_indices = [];
 var practice_indices = [];
 var test_indices = [];
 
@@ -1565,8 +1565,9 @@ function insert_feed(
     indicies = get_random_sample_indices_from_chunks(feed_data, starting_num_posts);
     // TODO: this is where we should take two
     if (exposure) {
-      indicies.forEach(item => study_indices.add(item));
+      indicies.forEach(item => study_indices.push(item));
     }
+
     
   }
 
@@ -1705,7 +1706,7 @@ function populate_feed_container(
             (index) =>
               !current_posts.some((current_post) => isEqual(current_post, index))
           ).sort(() => .5 - Math.random()).slice(0, num_posts_to_load);
-          indicies.forEach(item => study_indices.add(item));
+          indicies.forEach(item => study_indices.push(item));
           for (let j = 0; j < all_posts.length; j++) {
             //TODO: this may have an issue in the case that the very last index is called
             if (typeof feeds[i][j] !== 'undefined' && (indicies.indexOf(feeds[i][j]["Index"]) != -1 || set_posts)) {
