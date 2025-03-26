@@ -579,13 +579,15 @@ var test_indices = [];
 // const possible_conditions = ["split_engagement_diff"];
 
 const possible_conditions = [
-  "split_engagement_diff"
+  "likes", "chronological", "factual", "gpt_quality", "severe_toxicity",
+  "Achievement", "Caring", "likes_noise_0.8", "factual_noise_0.8",
+  "first_person_pronouns", "odd_digits_ratio", "comma_ratio", "time",
+  "odder_engagement", "messy", "split_engagement_diff", "split_quality", 
+  "winter", "first_person_pronouns_noise_0.8", 
+  "odder_engagement_noise_0.8", "conservative_values", 
+  "split_grammar", "parts_of_speech", 
+  "Caring_no_punctuation", "parts_of_speech_noise_0.8"
 ]
-// ["Achievement", "Caring_punctuation", "comma_ratio", "factual_noise_0.8",
-//   "first_person_pronouns_noise_0.8", "length", "likes_noise_0.8", "mess", "odd_digits_ratio", "odder_engagement",
-//   "odder_engagement_noise_0.8", "parts_of_speech_noise_0.8", "positive", "split_engagement_diff", "split_grammar",
-//   "split_quality", "time", "vowel_ratio", "winter"
-// ]
 
 
 
@@ -3012,7 +3014,7 @@ function submit() {
       Accept: "*/*",
     },
     body: JSON.stringify({
-      experimentID: "34jLziz8m938",
+      experimentID: "rhiynD9n7oKL",
       filename: filename,
       data: string_output,
     }),
